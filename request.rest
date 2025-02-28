@@ -5,4 +5,23 @@ GET http://localhost:3000
 GET http://localhost:3000/posts
 
 ###
+GET http://localhost:3000/posts?owner=tal
+
+###
+
+GET http://localhost:3000/posts/765654
+
+###
 POST http://localhost:3000/posts
+Content-Type: application/json
+
+{
+    "owner": "tal",
+    "title": "My first post",
+    "content": "This is my first post"
+   
+}
+
+###
+DELETE http://localhost:3000/posts/765654
+ 
