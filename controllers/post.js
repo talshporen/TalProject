@@ -1,18 +1,28 @@
  const postModel = require('../models/posts_model');
 
- const getAllPosts =async (req, res) => {
+ const getAllPosts = async (req, res) => {
    const ownerFilter = req.query.owner;
    try{
+      if(ownerFilter) {
+         const posts = await postModel.find({owner: ownerFilter});
+         res.status(200).send(posts);
+      } else {
       const posts = await postModel.find();
       res.status(200).send(posts);
-}catch(error){
-   res.status(400).send(error.mesege);
-}
+      }
+   } catch(error) {
+      res.status(400).send(error.mesege);
+   }  
  };
 
- const getPostById = (req, res) => {
+ const getPostById = async (req, res) => {
    const postId = req.params.id;
-   res.send('get a post by id: ' + postId);
+   try{
+      const post = await postModel.findById(postId);
+   res.status(200).send(post);
+   } catch(error) {
+      res.status(400).send(error.mesege);
+   }
 };
 
  const createPost =async (req, res) => {
@@ -24,13 +34,15 @@
       res.status(400).send(error);
    }
 };
-   
 
-
-
- const deletePostById = (req, res) => {
+ const deletePostById = async (req, res) => {
    const postId = req.params.id;
-   res.send('delete a post by id' + postId);
+   try{
+      const post = await postModel.findByIdAndDelete(postId);
+      res.status(200).send(post);
+   } catch(error) {  
+      res.status(204).send(error.message);
+   }
 };
 
 
