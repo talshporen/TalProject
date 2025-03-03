@@ -1,9 +1,10 @@
-const app = require('./server');
+const appInit =require('./server');
+const port = process.env.PORT;
 
-const port = process.env.PORT||3000;
-
-app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
-} );
-
-module.exports = app;
+const tmpFunk = async () => {
+  const app = await appInit();
+  app.listen(port, () => {
+    console.log(`Example app listeniung at http://localhost:${port}`);
+  });
+};
+tmpFunk();
