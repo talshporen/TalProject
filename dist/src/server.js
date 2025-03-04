@@ -19,6 +19,7 @@ dotenv_1.default.config();
 const mongoose_1 = __importDefault(require("mongoose"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const post_routes_1 = __importDefault(require("./routes/post_routes"));
+const comments_routes_1 = __importDefault(require("./routes/comments_routes"));
 const initApp = () => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => {
         const db = mongoose_1.default.connection;
@@ -33,15 +34,17 @@ const initApp = () => __awaiter(void 0, void 0, void 0, function* () {
             reject();
         }
         else {
-            mongoose_1.default.connect(process.env.MONGO_URI).then(() => {
-                console.log("initApp finish");
+            mongoose_1.default
+                .connect(process.env.MONGO_URI)
+                .then(() => {
                 app.use(body_parser_1.default.json());
                 app.use(body_parser_1.default.urlencoded({ extended: true }));
                 app.use('/posts', post_routes_1.default);
-                app.get('/', (req, res) => {
-                    res.send('Hello World!');
-                });
+                app.use('/comments', comments_routes_1.default);
                 resolve(app);
+            })
+                .catch((error) => {
+                reject(error);
             });
         }
     });
