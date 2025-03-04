@@ -9,7 +9,7 @@ GET http://localhost:3000/posts?owner=tal2
 
 ###
 
-GET http://localhost:3000/posts/67c201ebf985c49637e88d44
+GET http://localhost:3000/posts/67c7290d7be99e4129c66e33
 
 ###
 POST http://localhost:3000/posts
@@ -23,5 +23,5 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:3000/posts/67c201ebf985c49637e88d44
+DELETE http://localhost:3000/posts/67c7290d7be99e4129c66e33
  

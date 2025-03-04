@@ -4,8 +4,8 @@ import dotenv from "dotenv";
 dotenv.config();
 import mongoose from "mongoose";
 import bodyParser from 'body-parser';
-
-import postRoutes from "./routes/post_routes";
+import post_routes from "./routes/post_routes";
+import comments_routes from "./routes/comments_routes";
 
 const initApp = async () => {
   return new Promise<Express>((resolve, reject) => {
@@ -21,21 +21,21 @@ if(process.env.MONGO_URI===undefined){
   console.error("MONGO_URI is not set");
   reject();
 }else{
- mongoose.connect(process.env.MONGO_URI).then(()=>{
-  console.log("initApp finish");
-
-
+ mongoose
+ .connect(process.env.MONGO_URI)
+ .then(()=>{
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
-
- 
-  app.use('/posts', postRoutes);
-  app.get('/', (req, res) => {
-    res.send('Hello World!');
-  });
+  app.use('/posts', post_routes);
+  app.use('/comments', comments_routes);
   resolve(app);
+})
+.catch((error) => {
+  reject(error);
 });
+
 }
+
 });
 };
 

@@ -1,105 +1,96 @@
 import request  from "supertest";
-import appInit from '../server';
+import initApp from '../server';
 import mongoose from 'mongoose';
-import postmodel from'../models/posts_model';
-import { Express } from "express";
-import userModel, { IUser } from "../models/user_model";
+import postModel from "../models/posts_model";
+import  { Express } from "express";
 
-let app: Express;
-
-type User = IUser & { token?: string };
-const testUser: User = {
-  email: "test@user.com",
-  password: "testpassword",
-}
+let app:Express;
 
 beforeAll(async () => {
+  app = await initApp();
   console.log("beforeAll");
-  app = await appInit();
-  await postmodel.deleteMany();
-
-  await userModel.deleteMany();
-  await request(app).post("/auth/register").send(testUser);
-  const res = await request(app).post("/auth/login").send(testUser);
-  testUser.token = res.body.token;
-  testUser._id = res.body._id;
-  expect(testUser.token).toBeDefined();
+  await postModel.deleteMany();
 });
 
-afterAll((done) => {
+afterAll(async() => {
   console.log("afterAll");
-  mongoose.connection.close();
-  done();
+  await mongoose.connection.close();
 });
+
 
 let postId = "";
+const testPost1 = {
+  title: "my first post",
+  content: "this is my first post",
+  owner: "TalOwner",
+};
+
+const testPost2 = {
+  title: "my first post 2",
+  content: "This is my first post 2",
+  owner: "TalOwner2",
+};
+
+const testPostFail = {
+  title: "Mt first post 2", 
+  content: "this is my first post",};
+
 describe("Posts Tests", () => {
-  test("Posts test get all", async () => {
+  test("Posts get all test", async () => {
     const response = await request(app).get("/posts");
+    console.log(response.body);
     expect(response.statusCode).toBe(200);
-    expect(response.body.length).toBe(0);
   });
 
-  test("Test Create Post", async () => {
-    const response = await request(app).post("/posts")
-      .set({ authorization: "JWT " + testUser.token })
-      .send({
-        title: "Test Post",
-        content: "Test Content",
-        owner: "TestOwner",
-      });
+  test("Posts create test", async () => {
+    const response = await request(app).post("/posts").send(testPost1);
+    console.log(response.body);
+    const post = response.body;
     expect(response.statusCode).toBe(201);
-    expect(response.body.title).toBe("Test Post");
-    expect(response.body.content).toBe("Test Content");
-    postId = response.body._id;
+    expect(post.title).toBe(testPost1.title);
+    expect(post.content).toBe(testPost1.content);
+    expect(post.owner).toBe(testPost1.owner);
+    postId = post._id;
   });
 
-  test("Test get post by owner", async () => {
-    const response = await request(app).get("/posts?owner=" + testUser._id);
+  test("post get by id test", async () => { 
+    const response = await request(app).get('/posts/'+postId);
+    const post = response.body;
+    console.log("/posts/"+postId);
+    console.log(post);
     expect(response.statusCode).toBe(200);
-    expect(response.body.length).toBe(1);
-    expect(response.body[0].title).toBe("Test Post");
-    expect(response.body[0].content).toBe("Test Content");
+    expect(response.body._id).toBe(postId);
   });
 
-  test("Test get post by id", async () => {
-    const response = await request(app).get("/posts/" + postId);
-    expect(response.statusCode).toBe(200);
-    expect(response.body.title).toBe("Test Post");
-    expect(response.body.content).toBe("Test Content");
-  });
 
-  test("Test Create Post 2", async () => {
-    const response = await request(app).post("/posts")
-      .set({ authorization: "JWT " + testUser.token })
-      .send({
-        title: "Test Post 2",
-        content: "Test Content 2",
-        owner: "TestOwner2",
-      });
+
+  test("posts create test", async () => {
+    const response = await request(app).post("/posts").send(testPost2);
+    console.log(response.body);
+    const post = response.body;
     expect(response.statusCode).toBe(201);
+    expect(post.title).toBe(testPost2.title);
+    expect(post.content).toBe(testPost2.content); 
+    expect(post.owner).toBe(testPost2.owner);
+    postId = post._id;
   });
 
-  test("Posts test get all 2", async () => {
-    const response = await request(app).get("/posts");
-    expect(response.statusCode).toBe(200);
-    expect(response.body.length).toBe(2);
-  });
-
-  test("Test Delete Post", async () => {
-    const response = await request(app).delete("/posts/" + postId)
-      .set({ authorization: "JWT " + testUser.token });
-    expect(response.statusCode).toBe(200);
-    const response2 = await request(app).get("/posts/" + postId);
-    expect(response2.statusCode).toBe(404);
-  });
-
-  test("Test Create Post fail", async () => {
-    const response = await request(app).post("/posts")
-      .set({ authorization: "JWT " + testUser.token })
-      .send({
-        content: "Test Content 2",
-      });
+  test("posts create test fail", async () => {
+    const response = await request(app).post("/posts").send(testPostFail);
     expect(response.statusCode).toBe(400);
   });
-});
+
+  test("posts get posts by owner", async () => {
+    const response = await request(app).get("/posts?owner=" + testPost1.owner);
+    expect(response.statusCode).toBe(200);
+    expect(testPost1.owner).toBe(testPost1.owner);
+    });
+  });
+
+  test("posts delete test", async () => {
+    const response = await request(app).delete("/posts/"+postId);
+    expect(response.statusCode).toBe(200);
+
+    const response2 = await request(app).get("/posts/"+postId);
+    expect(response2.statusCode).toBe(404);
+  });

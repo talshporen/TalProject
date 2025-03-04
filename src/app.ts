@@ -1,8 +1,7 @@
-import appInit from "./server";
-
+import initApp from "./server";
 const port = process.env.PORT;
 
-appInit().then((app) => {
+initApp().then((app) => {
   app.listen(port, () => {
     console.log(`Example app listeniung at http://localhost:${port}`);
   });

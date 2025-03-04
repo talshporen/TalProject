@@ -7,7 +7,7 @@
     "dev": "nodemon ./src/app.ts",
     "start": "tsc && node ./dist/app.js",
     "lint": "eslint . --ext .ts",
-    "test": "tsc && jest --detectOpenHandles --forceExit"
+    "test": "tsc && jest --detectOpenHandles --forceExit--"
   },
   "repository": {
     "type": "git",
