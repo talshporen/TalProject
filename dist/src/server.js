@@ -20,6 +20,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const post_routes_1 = __importDefault(require("./routes/post_routes"));
 const comments_routes_1 = __importDefault(require("./routes/comments_routes"));
+const auth_routes_1 = __importDefault(require("./routes/auth_routes"));
 const initApp = () => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => {
         const db = mongoose_1.default.connection;
@@ -41,6 +42,7 @@ const initApp = () => __awaiter(void 0, void 0, void 0, function* () {
                 app.use(body_parser_1.default.urlencoded({ extended: true }));
                 app.use('/posts', post_routes_1.default);
                 app.use('/comments', comments_routes_1.default);
+                app.use('/auth', auth_routes_1.default);
                 resolve(app);
             })
                 .catch((error) => {
