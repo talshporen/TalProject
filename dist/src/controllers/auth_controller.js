@@ -19,77 +19,182 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const email = req.body.email;
-    const password = req.body.password;
-    if (!email || !password) {
-        res.status(400).send("missing email or password");
-    }
     try {
+        const password = req.body.password;
         const salt = yield bcrypt_1.default.genSalt(10);
         const hashedPassword = yield bcrypt_1.default.hash(password, salt);
         const user = yield user_model_1.default.create({
             email: req.body.email,
             password: hashedPassword,
         });
-        return res.status(200).send(user);
+        res.status(200).send(user);
     }
     catch (err) {
         res.status(400).send(err);
     }
 });
-const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const email = req.body.email;
-    const password = req.body.password;
-    if (!email || !password) {
-        res.status(400).send("wrong email or password");
+const generateToken = (userId) => {
+    if (!process.env.TOKEN_SECRET) {
+        return null;
     }
+    // generate token
+    const random = Math.random().toString();
+    const accessToken = jsonwebtoken_1.default.sign({
+        _id: userId,
+        random: random
+    }, process.env.TOKEN_SECRET, { expiresIn: process.env.TOKEN_EXPIRES });
+    const refreshToken = jsonwebtoken_1.default.sign({
+        _id: userId,
+        random: random
+    }, process.env.TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRES });
+    return {
+        accessToken: accessToken,
+        refreshToken: refreshToken
+    };
+};
+const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const user = yield user_model_1.default.findOne({ email: req.body.email });
         if (!user) {
-            res.status(400).send("wrong email or password");
+            res.status(400).send('wrong username or password');
             return;
         }
         const validPassword = yield bcrypt_1.default.compare(req.body.password, user.password);
         if (!validPassword) {
-            res.status(400).send("wrong email or password");
+            res.status(400).send('wrong username or password');
             return;
         }
         if (!process.env.TOKEN_SECRET) {
-            res.status(400).send("missing auth configuration");
+            res.status(500).send('Server Error');
             return;
         }
-        const token = jsonwebtoken_1.default.sign({ userId: user._id }, process.env.TOKEN_SECRET, { expiresIn: process.env.TOKEN_EXPIRATION || "1h" });
-        return res.status(200).json({
-            email: user.email,
-            _id: user._id,
-            token: token,
+        // generate token
+        const tokens = generateToken(user._id);
+        if (!tokens) {
+            res.status(500).send('Server Error');
+            return;
+        }
+        if (!user.refreshToken) {
+            user.refreshToken = [];
+        }
+        user.refreshToken.push(tokens.refreshToken);
+        yield user.save();
+        res.status(200).send({
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
+            _id: user._id
         });
     }
     catch (err) {
-        res.status(400);
+        res.status(400).send(err);
+    }
+});
+const verifyRefreshToken = (refreshToken) => {
+    return new Promise((resolve, reject) => {
+        //get refresh token from body
+        if (!refreshToken) {
+            reject("fail");
+            return;
+        }
+        //verify token
+        if (!process.env.TOKEN_SECRET) {
+            reject("fail");
+            return;
+        }
+        jsonwebtoken_1.default.verify(refreshToken, process.env.TOKEN_SECRET, (err, payload) => __awaiter(void 0, void 0, void 0, function* () {
+            if (err) {
+                reject("fail");
+                return;
+            }
+            //get the user id fromn token
+            const userId = payload._id;
+            try {
+                //get the user form the db
+                const user = yield user_model_1.default.findById(userId);
+                if (!user) {
+                    reject("fail");
+                    return;
+                }
+                if (!user.refreshToken || !user.refreshToken.includes(refreshToken)) {
+                    user.refreshToken = [];
+                    yield user.save();
+                    reject("fail");
+                    return;
+                }
+                const tokens = user.refreshToken.filter((token) => token !== refreshToken);
+                user.refreshToken = tokens;
+                resolve(user);
+            }
+            catch (err) {
+                reject("fail");
+                return;
+            }
+        }));
+    });
+};
+const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield verifyRefreshToken(req.body.refreshToken);
+        yield user.save();
+        res.status(200).send("success");
+    }
+    catch (err) {
+        res.status(400).send("fail");
+    }
+});
+const refresh = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield verifyRefreshToken(req.body.refreshToken);
+        if (!user) {
+            res.status(400).send("fail");
+            return;
+        }
+        const tokens = generateToken(user._id);
+        if (!tokens) {
+            res.status(500).send('Server Error');
+            return;
+        }
+        if (!user.refreshToken) {
+            user.refreshToken = [];
+        }
+        user.refreshToken.push(tokens.refreshToken);
+        yield user.save();
+        res.status(200).send({
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
+            _id: user._id
+        });
+        //send new token
+    }
+    catch (err) {
+        res.status(400).send("fail");
     }
 });
 const authMiddleware = (req, res, next) => {
-    const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1];
+    const authorization = req.header('authorization');
+    const token = authorization && authorization.split(' ')[1];
     if (!token) {
-        res.status(401).send("missing token");
+        res.status(401).send('Access Denied');
         return;
     }
     if (!process.env.TOKEN_SECRET) {
-        res.status(400).send("missing auth configuration");
+        res.status(500).send('Server Error');
         return;
     }
-    jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET, (err, data) => {
+    jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET, (err, payload) => {
         if (err) {
-            res.status(403).send("invalid token");
+            res.status(401).send('Access Denied');
             return;
         }
-        const payload = data;
-        req.query.userId = payload._id;
+        req.params.userId = payload._id;
         next();
     });
 };
 exports.authMiddleware = authMiddleware;
-exports.default = { register, login };
+exports.default = {
+    register,
+    login,
+    refresh,
+    logout
+};
 //# sourceMappingURL=auth_controller.js.map
