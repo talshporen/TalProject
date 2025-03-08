@@ -34,23 +34,25 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 const generateToken = (userId) => {
-    if (!process.env.TOKEN_SECRET) {
+    try {
+        const tokenSecret = process.env.TOKEN_SECRET;
+        const tokenExpiration = process.env.TOKEN_EXPIRATION || '1h';
+        const refreshTokenExpiration = process.env.REFRESH_TOKEN_EXPIRATION || '7d';
+        if (!tokenSecret) {
+            throw new Error('TOKEN_SECRET is not defined');
+        }
+        const random = Math.random().toString();
+        const accessToken = jsonwebtoken_1.default.sign({ _id: userId, random: random }, tokenSecret, { expiresIn: tokenExpiration });
+        const refreshToken = jsonwebtoken_1.default.sign({ _id: userId, random: random }, tokenSecret, { expiresIn: refreshTokenExpiration });
+        return {
+            accessToken: accessToken,
+            refreshToken: refreshToken
+        };
+    }
+    catch (err) {
+        console.error("error in generateToken", err);
         return null;
     }
-    // generate token
-    const random = Math.random().toString();
-    const accessToken = jsonwebtoken_1.default.sign({
-        _id: userId,
-        random: random
-    }, process.env.TOKEN_SECRET, { expiresIn: process.env.TOKEN_EXPIRES });
-    const refreshToken = jsonwebtoken_1.default.sign({
-        _id: userId,
-        random: random
-    }, process.env.TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRES });
-    return {
-        accessToken: accessToken,
-        refreshToken: refreshToken
-    };
 };
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -68,8 +70,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             res.status(500).send('Server Error');
             return;
         }
-        // generate token
-        const tokens = generateToken(user._id);
+        const tokens = generateToken(user._id.toString());
         if (!tokens) {
             res.status(500).send('Server Error');
             return;
@@ -91,12 +92,10 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 const verifyRefreshToken = (refreshToken) => {
     return new Promise((resolve, reject) => {
-        //get refresh token from body
         if (!refreshToken) {
             reject("fail");
             return;
         }
-        //verify token
         if (!process.env.TOKEN_SECRET) {
             reject("fail");
             return;
@@ -106,10 +105,8 @@ const verifyRefreshToken = (refreshToken) => {
                 reject("fail");
                 return;
             }
-            //get the user id fromn token
             const userId = payload._id;
             try {
-                //get the user form the db
                 const user = yield user_model_1.default.findById(userId);
                 if (!user) {
                     reject("fail");
@@ -164,7 +161,6 @@ const refresh = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             refreshToken: tokens.refreshToken,
             _id: user._id
         });
-        //send new token
     }
     catch (err) {
         res.status(400).send("fail");

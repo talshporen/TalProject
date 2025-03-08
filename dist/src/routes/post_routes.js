@@ -7,6 +7,12 @@ const express_1 = __importDefault(require("express"));
 const post_controller_1 = __importDefault(require("../controllers/post_controller"));
 const auth_controller_1 = require("../controllers/auth_controller");
 const router = express_1.default.Router();
+/**
+ * @swagger
+ * tars:
+ *  name: Posts
+ * description: The posts API
+ */
 router.get('/', (req, res) => {
     post_controller_1.default.getAll(req, res);
 });
