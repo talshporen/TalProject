@@ -21,28 +21,41 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const post_routes_1 = __importDefault(require("./routes/post_routes"));
 const comments_routes_1 = __importDefault(require("./routes/comments_routes"));
 const auth_routes_1 = __importDefault(require("./routes/auth_routes"));
+const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
+const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
+app.use(body_parser_1.default.json());
+app.use(body_parser_1.default.urlencoded({ extended: true }));
+app.use('/posts', post_routes_1.default);
+app.use('/comments', comments_routes_1.default);
+app.use('/auth', auth_routes_1.default);
+const options = {
+    definition: {
+        openapi: "3.0.0",
+        info: {
+            title: "Web Dev 2025 REST API",
+            version: "1.0.0",
+            description: "REST server including authentication using JWT",
+        },
+        servers: [{ url: "http://localhost:3000", },],
+    },
+    apis: ["./src/routes/*.ts"],
+};
+const specs = (0, swagger_jsdoc_1.default)(options);
+app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(specs));
 const initApp = () => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => {
         const db = mongoose_1.default.connection;
-        db.on('error', (error) => {
-            console.error(error);
+        db.on('error', console.error.bind(console, "connection error: "));
+        db.once("open", function () {
+            console.log("Connected to database");
         });
-        db.once("open", () => {
-            console.log("Connected to mongoDB");
-        });
-        if (process.env.MONGO_URI === undefined) {
-            console.error("MONGO_URI is not set");
-            reject();
+        if (!process.env.MONGO_URI) {
+            reject("MONGO_URI is not defined");
         }
         else {
             mongoose_1.default
                 .connect(process.env.MONGO_URI)
                 .then(() => {
-                app.use(body_parser_1.default.json());
-                app.use(body_parser_1.default.urlencoded({ extended: true }));
-                app.use('/posts', post_routes_1.default);
-                app.use('/comments', comments_routes_1.default);
-                app.use('/auth', auth_routes_1.default);
                 resolve(app);
             })
                 .catch((error) => {

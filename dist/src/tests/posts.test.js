@@ -95,7 +95,7 @@ describe("Posts Tests", () => {
         const post = response.body[0];
         expect(response.statusCode).toBe(200);
         expect(post.owner).toBe(userInfo._id);
-        expect(supertest_1.default.body.length).toBe(2);
+        expect(response.body.length).toBe(2);
     }));
     test("posts delete test", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).delete("/posts/" + postId)

@@ -105,13 +105,13 @@ describe("Posts Tests", () => {
     const post = response.body[0];
     expect(response.statusCode).toBe(200);
     expect(post.owner).toBe(userInfo._id);
-    expect(request.body.length).toBe(2);
+    expect(response.body.length).toBe(2);
     });
 
-  test("posts delete test", async () => {
-    const response = await request(app).delete("/posts/"+postId)
-    .set("Authorization", "JWT" + userInfo.token);
-    expect(response.statusCode).toBe(200);
+    test("posts delete test", async () => {
+      const response = await request(app).delete("/posts/"+postId)
+      .set("Authorization", "JWT" + userInfo.token);
+      expect(response.statusCode).toBe(200);
 
     const response2 = await request(app).get("/posts/"+postId);
     expect(response2.statusCode).toBe(404);
