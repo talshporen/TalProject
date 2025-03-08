@@ -7,8 +7,9 @@
     "dev": "nodemon ./src/app.ts",
     "start": "tsc && node ./dist/app.js",
     "lint": "eslint . --ext .ts",
-    "test": "tsc && jest --detectOpenHandles --forceExit--",
-    "testAuth": "tsc && jest --detectOpenHandles --forceExit auth.test.ts"
+    "test": "tsc && jest --detectOpenHandles --forceExit --runInBand",
+    "testAuth": "tsc && jest --detectOpenHandles --forceExit auth.test.ts",
+    "testPost": "tsc && jest --detectOpenHandles --forceExit posts.test.ts"
   },
   "repository": {
     "type": "git",
