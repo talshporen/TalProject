@@ -4,17 +4,28 @@ import dotenv from "dotenv";
 dotenv.config();
 import mongoose from "mongoose";
 import bodyParser from 'body-parser';
+import swaggerJsDoc from "swagger-jsdoc";
+import swaggerUI from "swagger-ui-express";
+import file_routes from "./routes/file_routes";
 import post_routes from "./routes/post_routes";
 import comments_routes from "./routes/comments_routes";
 import auth_routes from "./routes/auth_routes";
-import swaggerJsDoc from "swagger-jsdoc";
-import swaggerUI from "swagger-ui-express";
+import path from "path";
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', "*");
+  res.header('Access-Control-Allow-Headers', '*');
+  next();
+});
+
 app.use('/posts', post_routes);
 app.use('/comments', comments_routes);
 app.use('/auth', auth_routes);
+app.use("/public", express.static(path.join(__dirname, "..", "public")));
+app.use("/file/",file_routes);
 
 const options = {
   definition: {

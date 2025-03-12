@@ -4,12 +4,13 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon ./src/app.ts",
-    "start": "tsc && node ./dist/app.js",
+    "dev": "copy .env_dev .env && nodemon ./src/app.ts",
+    "start": "copy .env_dev .env && tsc && node ./dist/app.js",
     "lint": "eslint . --ext .ts",
-    "test": "tsc && jest --detectOpenHandles --forceExit --runInBand",
-    "testAuth": "tsc && jest --detectOpenHandles --forceExit auth.test.ts",
-    "testPost": "tsc && jest --detectOpenHandles --forceExit posts.test.ts"
+    "test": "copy .env_test .env && tsc && jest --detectOpenHandles --forceExit --runInBand",
+    "testAuth": "copy .env_test .env && tsc && jest --detectOpenHandles --forceExit auth.test.ts",
+    "testPost": "copy .env_test .env && tsc && jest --detectOpenHandles --forceExit posts.test.ts",
+    "textFile": "copy .env_test .env && tsc && jest --detectOpenHandles --forceExit file.test.ts"
   },
   "repository": {
     "type": "git",
@@ -28,7 +29,8 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.11.0"
+    "mongoose": "^8.11.0",
+    "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
@@ -36,6 +38,7 @@
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.9",
+    "@types/multer": "^1.4.12",
     "@types/supertest": "^6.0.2",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",

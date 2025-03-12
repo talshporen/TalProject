@@ -18,16 +18,26 @@ const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const mongoose_1 = __importDefault(require("mongoose"));
 const body_parser_1 = __importDefault(require("body-parser"));
+const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
+const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
+const file_routes_1 = __importDefault(require("./routes/file_routes"));
 const post_routes_1 = __importDefault(require("./routes/post_routes"));
 const comments_routes_1 = __importDefault(require("./routes/comments_routes"));
 const auth_routes_1 = __importDefault(require("./routes/auth_routes"));
-const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
-const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
+const path_1 = __importDefault(require("path"));
 app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', "*");
+    res.header('Access-Control-Allow-Headers', '*');
+    next();
+});
 app.use('/posts', post_routes_1.default);
 app.use('/comments', comments_routes_1.default);
 app.use('/auth', auth_routes_1.default);
+app.use("/public", express_1.default.static(path_1.default.join(__dirname, "..", "public")));
+app.use("/file/", file_routes_1.default);
 const options = {
     definition: {
         openapi: "3.0.0",
