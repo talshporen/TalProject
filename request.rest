@@ -1,27 +1,150 @@
-###
-GET http://localhost:3000
 
-###
-GET http://localhost:3000/posts
+### register user
 
-###
-GET http://localhost:3000/posts?owner=tal2
-
-###
-
-GET http://localhost:3000/posts/67c7290d7be99e4129c66e33
-
-###
-POST http://localhost:3000/posts
+POST http://localhost:3000/user/register
 Content-Type: application/json
 
 {
-    "owner": "tal2",
-    "title": "My first post",
-    "content": "This is my first post"
-   
+  "username": "tal",
+  "password": "123456",
+  "email": "tal123@gmail.com",
+  "f_name": "tal2",
+  "l_name": "shporen2",
+  "picture": "picture"
 }
 
-###
-DELETE http://localhost:3000/posts/67c7290d7be99e4129c66e33
- 
+### login user
+
+POST http://localhost:3000/user/login
+Content-Type: application/json
+
+{
+  "username": "talusername",
+  "password": "123456"
+}
+
+### refresh token
+
+POST http://localhost:3000/user/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2Q1YWRhNDUyYjM1Yzc1ZjFiMTNhNTYiLCJyYW5kb20iOjc4MTA2NiwiaWF0IjoxNzQyMDU3MTA4LCJleHAiOjE3NDQ2NDkxMDh9.b4w3HCokqMgENriTf9qjej-yaNwjkoZDoq0Eieim9DI"
+}
+
+### get user
+
+GET http://localhost:3000/user/67d5ada452b35c75f1b13a56
+
+### update user
+
+PUT http://localhost:3000/user/update
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2Q1YWRhNDUyYjM1Yzc1ZjFiMTNhNTYiLCJyYW5kb20iOjc4MTA2NiwiaWF0IjoxNzQyMDU3MTA4LCJleHAiOjE3NDQ2NDkxMDh9.b4w3HCokqMgENriTf9qjej-yaNwjkoZDoq0Eieim9DI
+Content-Type: application/json
+
+{
+    "username": "tal",
+    "f_name": "f_name",
+    "l_name": "l_name",
+    "picture": "picture"
+}
+
+### delete user
+
+DELETE http://localhost:3000/user/delete
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzczZjQ0YmUyY2ViYTZiOTEwMmQxZGYiLCJyYW5kb20iOjI5MDExOSwiaWF0IjoxNzM1NzYxNzE5LCJleHAiOjE3MzU3NjUzMTl9.hQDIzAyd5cMa51DMRkTyxrwUOD55MUAbQIv7Wkk5gdk
+
+
+
+### create post
+POST http://localhost:3000/post
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2Q1YWRhNDUyYjM1Yzc1ZjFiMTNhNTYiLCJyYW5kb20iOjc4MTA2NiwiaWF0IjoxNzQyMDU3MTA4LCJleHAiOjE3NDQ2NDkxMDh9.b4w3HCokqMgENriTf9qjej-yaNwjkoZDoq0Eieim9DI
+Content-Type: application/json
+
+{
+  "title": "tal",
+  "description": "description",
+  "image": "image",
+  "catagory": "catagory",
+  "phone": "phone",
+  "region": "region", 
+  "city": "city"
+}
+
+
+### get all posts
+GET http://localhost:3000/post
+
+### get all posts by catagory
+
+GET http://localhost:3000/post?catagory=catagory
+
+
+### get all posts by user
+GET http://localhost:3000/post?user=6773d4c64552ddf233191d11
+
+
+### get post
+GET http://localhost:3000/post/6773d98d6e57863fb43237e6
+
+
+### like a post
+POST http://localhost:3000/post/6773ed6d4edf52b663fa1b0b/like
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzczZWQ1YjRlZGY1MmI2NjNmYTFiMDciLCJyYW5kb20iOjU4MjAzNSwiaWF0IjoxNzM1NjUwNjc2LCJleHAiOjE3MzU2NTQyNzZ9.uIoE9nWrudzv9_y02oEGjSDsxHPmhg7F-vjlhPih7NI
+
+
+### update post
+PUT http://localhost:3000/post/6773e7605559c4655526fd5d
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzczZWE1YWU2NzEwYzQ4NGQ1NGYzODYiLCJyYW5kb20iOjI0NDkyNywiaWF0IjoxNzM1NjQ5OTE2LCJleHAiOjE3MzU2NTM1MTZ9.7jLOyDRVbOoBFmf0e7-ffdN6Gm0HyI3f1XQYvBtd3Vc
+Content-Type: application/json
+
+{
+  "title": "title",
+  "description": "123"
+}
+
+
+### delete post
+DELETE http://localhost:3000/post/6773f45ae2ceba6b9102d1e4
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzczZjQ0YmUyY2ViYTZiOTEwMmQxZGYiLCJyYW5kb20iOjI5MDExOSwiaWF0IjoxNzM1NzYxNzE5LCJleHAiOjE3MzU3NjUzMTl9.hQDIzAyd5cMa51DMRkTyxrwUOD55MUAbQIv7Wkk5gdk
+
+
+### comments api
+
+### create comment
+
+POST http://localhost:3000/comment
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzczZjQ0YmUyY2ViYTZiOTEwMmQxZGYiLCJyYW5kb20iOjI5MDExOSwiaWF0IjoxNzM1NzYxNzE5LCJleHAiOjE3MzU3NjUzMTl9.hQDIzAyd5cMa51DMRkTyxrwUOD55MUAbQIv7Wkk5gdk
+Content-Type: application/json
+
+{
+  "post": "6775a03dbd8da180466b5dab",
+  "content": "comment"
+}
+
+### get all comments by post
+
+GET http://localhost:3000/comment/post/6773f45ae2ceba6b9102d1e4
+
+
+### get comment by id 
+
+GET http://localhost:3000/comment/67759e613a4d2914e4de2222
+
+
+### update comment
+
+PUT http://localhost:3000/comment/67759e613a4d2914e4de2222
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzczZjQ0YmUyY2ViYTZiOTEwMmQxZGYiLCJyYW5kb20iOjI5MDExOSwiaWF0IjoxNzM1NzYxNzE5LCJleHAiOjE3MzU3NjUzMTl9.hQDIzAyd5cMa51DMRkTyxrwUOD55MUAbQIv7Wkk5gdk
+Content-Type: application/json
+
+{
+  "content": "tal2"
+}
+
+### delete comment
+
+DELETE http://localhost:3000/comment/67759e613a4d2914e4de2222
+Authorization: JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NzczZjQ0YmUyY2ViYTZiOTEwMmQxZGYiLCJyYW5kb20iOjI5MDExOSwiaWF0IjoxNzM1NzYxNzE5LCJleHAiOjE3MzU3NjUzMTl9.hQDIzAyd5cMa51DMRkTyxrwUOD55MUAbQIv7Wkk5gdk
+
+

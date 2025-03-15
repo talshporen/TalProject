@@ -23,9 +23,13 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const password = req.body.password;
         const salt = yield bcrypt_1.default.genSalt(10);
         const hashedPassword = yield bcrypt_1.default.hash(password, salt);
+        let imgUrl = req.body.imgUrl;
+        if (!imgUrl)
+            imgUrl = null;
         const user = yield user_model_1.default.create({
             email: req.body.email,
             password: hashedPassword,
+            imgUrl: imgUrl,
         });
         res.status(200).send(user);
     }
@@ -70,7 +74,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             res.status(500).send('Server Error');
             return;
         }
-        const tokens = generateToken(user._id.toString());
+        const tokens = generateToken(user);
         if (!tokens) {
             res.status(500).send('Server Error');
             return;
@@ -146,7 +150,7 @@ const refresh = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             res.status(400).send("fail");
             return;
         }
-        const tokens = generateToken(user._id);
+        const tokens = generateToken(user);
         if (!tokens) {
             res.status(500).send('Server Error');
             return;

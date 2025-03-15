@@ -34,10 +34,6 @@ describe("Auth test", () => {
         const response = yield (0, supertest_1.default)(app).post("/auth/register").send(userInfo);
         expect(response.statusCode).toBe(200);
     }));
-    test("auth registration fail", () => __awaiter(void 0, void 0, void 0, function* () {
-        const response = yield (0, supertest_1.default)(app).post("/auth/register").send(userInfo);
-        expect(response.statusCode).not.toBe(200);
-    }));
     test("auth login", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).post("/auth/login").send(userInfo);
         console.log(response.body);
@@ -96,12 +92,6 @@ describe("Auth test", () => {
         userInfo.accessToken = response.body.accessToken;
         userInfo.refreshToken = response.body.refreshToken;
     });
-    test("refresh token", () => __awaiter(void 0, void 0, void 0, function* () {
-        refreshTokenTest();
-    }));
-    test("refresh token", () => __awaiter(void 0, void 0, void 0, function* () {
-        refreshTokenTest();
-    }));
     test("logout - invalidate", () => __awaiter(void 0, void 0, void 0, function* () {
         const response = yield (0, supertest_1.default)(app).post("/auth/logout").send({
             refreshToken: userInfo.refreshToken

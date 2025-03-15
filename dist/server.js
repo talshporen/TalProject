@@ -28,12 +28,12 @@ const initApp = () => __awaiter(void 0, void 0, void 0, function* () {
         db.once("open", () => {
             console.log("Connected to mongoDB");
         });
-        if (process.env.MONGO_URI === undefined) {
-            console.error("MONGO_URI is not set");
+        if (process.env.DB_CONNECT === undefined) {
+            console.error("DB_CONNECT is not set");
             reject();
         }
         else {
-            mongoose_1.default.connect(process.env.MONGO_URI).then(() => {
+            mongoose_1.default.connect(process.env.DB_CONNECT).then(() => {
                 console.log("initApp finish");
                 app.use(body_parser_1.default.json());
                 app.use(body_parser_1.default.urlencoded({ extended: true }));
