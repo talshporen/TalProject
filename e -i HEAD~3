@@ -1,0 +1,23 @@
+[33m6e0a3c9[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Removed OpenAI key from .env
+[33m5166222[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Remove env files from git tracking
+[33md801c1d[m finish the back
+[33m2f12d09[m networking and image
+[33m5dbcadd[m Merge pull request #7 from talshporen/swagger
+[33mff61366[m swagger
+[33mafa607e[m Merge pull request #6 from talshporen/part-2-jwt
+[33mba524e8[m paer 2 - token
+[33m164aba3[m Merge pull request #5 from talshporen/jwt
+[33m9c3e6a2[m part 1 token
+[33m1eeeb64[m[33m ([m[1;31morigin/JWT[m[33m)[m Merge pull request #4 from talshporen/comments
+[33mf8ff034[m comments
+[33m847aa78[m Merge pull request #3 from talshporen/typescript
+[33m4634418[m typeScript
+[33m9a32129[m Merge pull request #2 from talshporen/Continue-testing
+[33m198200f[m tests
+[33m53f8316[m Merge pull request #1 from talshporen/tests
+[33m3fc755d[m starting tests
+[33m4f7c009[m delete post bi id
+[33mc3aa11f[m creat a models from posts and conect to mongo DB
+[33m908af5c[m create acontrollers and routs
+[33m96d13f9[m First upload of the project
+[33mc926e17[m Initial commit
